@@ -55,11 +55,29 @@ while cv2.waitKey(1)>0:
         cv2.waitKey()
         break
 
-n = int(input("Masukan Nomor Anda : "))
-if n == 5:
-    print f("Angka Anda adalah" {n})
-elif n >=5:
-    print f("Angka yang Anda Masukan Melebihi limit")
-elif n <=5:
-    print f("Angka yang Anda Masukan Terlalu Kecil")
-else:
+# Output
+resultImg, faceBoxes=highlightFace(faceNet, frame)
+if not faceBoxes:
+    print("No Face Detected")
+
+# Looping Condition
+for faceBoxes in faceBoxes:
+    face=frame[max(0, faceBoxes[1]-padding):
+               min(faceBoxes[3]+padding, frame.shape[0]-1), max(0,faceBoxes[0]-padding):
+               min(faceBoxes[2]+padding, frame.shape[1]-1)]
+
+    blob=cv2.dnn.blobfromImage(face,1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
+
+    genderNet.setInput(blob)
+    genderPreds=genderNet,forward()
+    gender=genderList[genderPreds[0].argmax()]
+    print(f "Gender: {gender}")
+# Age Output
+    ageNet.setInput(blob)
+    agePreds=ageNet.forward()
+    age=ageList[agePreds[0].argmax()]
+    print(f "Age: {age[1:-1]} years")
+
+    cv2.putText(resultImg, f"{gender},{age}", (faceBox[0]),faceBox[1]-10),
+    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,225,255), 2, cv2.LINE_AA)
+    cv2.lmshow("Detecting age and gender", resultImg)
